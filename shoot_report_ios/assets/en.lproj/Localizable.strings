@@ -22,7 +22,7 @@
 "information_section_version" = "Information about the version";
 "information_section_version_title" = "Version";
 "information_section_build_title" = "Build";
-"information_section_build_content" = "20210914";
+"information_section_build_content" = "20211216";
 "information_section_source" = "Sources";
 "information_section_source_content" = "Texts of the coach are in accordance with the Trainer-C mass sports training of the \"Deutscher Schützenbund\".";
 
@@ -79,6 +79,7 @@
 "training_add_title_report" = "Training report";
 "training_add_share" = "Share Training";
 "training_add_save" = "Save Training";
+"training_add_edit" = "Edit Training";
 "training_add_success" = "Training saved!";
 "training_add_edit_success" = "Training updated!";
 
@@ -110,6 +111,7 @@
 "competition_add_title_report" = "Competition report";
 "competition_add_share" = "Share Competition";
 "competition_add_save" = "Save Competition";
+"competition_add_edit" = "Edit Competition";
 "competition_add_success" = "Competition saved!";
 "competition_add_edit_success" = "Competition updated!";
 

@@ -21,6 +21,7 @@ struct TrainingListView: View {
             }
             .onDelete(perform: deleteTraining)
         }
+        .listStyle(PlainListStyle())
         .sheet(isPresented: $isPresented) {
             TrainingDetails(inEdit: true, training: $info)
         }
