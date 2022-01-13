@@ -27,6 +27,7 @@
 "information_section_source_content" = "Texte der Trainerfunktion sind in Anlehnung der Trainer-C Breitensportausbildung des Deutschen Schützenbundes.";
 
 // Rifle
+"rifle" = "Waffe";
 "rifle_title" = "shoot report";
 "rifle_1" = "Luftgewehr";
 "rifle_2" = "Luftgewehr 3-Stellung";

@@ -18,20 +18,23 @@ struct TrainingDetails: View {
     @State private var showingAlert = false
     @State private var showingSuccessAlert = false
     @State var isImagePickerViewPresented = false
+    @State var isShareFilePresented = false
     @State var inEdit: Bool = true
     @State var moodEmote: HelperMood.Mood = HelperMood.Mood.fine
     @State var trainingKind: HelperTrainingKind.Kind = HelperTrainingKind.Kind.setUp
     @State var location: String = ""
     @State var date: Date = Date()
     @State var pickedImages: [UIImage] = []
+    @State var shareViewURL: [NSURL] = []
     @State var shoot_count: String = ""
     @State var shots: [String] = []
     @State var totalRings: Double = 0
     @State var average: Double = 0
     @State var report: String = ""
     private let textFieldObserver = TextFieldObserver()
-    
     @Binding var training: Training
+    var rifle: Rifle
+    
     
     var body: some View {
         NavigationView {
@@ -186,19 +189,21 @@ struct TrainingDetails: View {
                         .ignoresSafeArea(.keyboard)
                         .disabled(inEdit)
                 }
+            
                 
                 Section {
-                    Button(action: { self.showingAlert.toggle() }, label: {
-                        HStack {
-                            Spacer()
-                            Text(LocalizedStringKey("training_add_share"))
-                                .bold()
-                                .foregroundColor(Color.white)
-                            Spacer()
-                        }
-                    })
+                    Button(action: {self.shareViewURL = [HelperShare.createTrainingCSV(training: training, rifle: rifle, average: average, total: totalRings)]; self.isShareFilePresented = true }, label: {
+                                HStack {
+                                    Spacer()
+                                    Text(LocalizedStringKey("training_add_share"))
+                                        .bold()
+                                        .foregroundColor(Color.white)
+                                    Spacer()
+                                }
+                        })
                     .listRowBackground(Color("mainColor"))
                     .disabled(!inEdit)
+                    
                     Button(action: { updateTraining(training: training) }, label: {
                         HStack {
                             Spacer()
@@ -255,6 +260,14 @@ struct TrainingDetails: View {
             }, completion: {
                 presentationMode.wrappedValue.dismiss()
             })
+            .sheet(isPresented: $isShareFilePresented){
+                HelperShareView(shareViewResult: $shareViewURL , isPresented: $isShareFilePresented)
+                
+            }.toast(isPresenting: $showingSuccessAlert, duration: 3, tapToDismiss: false, alert: {
+                AlertToast(type: .complete(Color("accentColor")), title: NSLocalizedString("training_add_edit_success", comment: ""))
+            }, completion: {
+                presentationMode.wrappedValue.dismiss()
+            })
         }
     }
     
@@ -299,8 +312,9 @@ struct TrainingDetails: View {
 struct TrainingDetails_Previews: PreviewProvider {
     
     @State static var training = Training()
+    @State static var rifle = Rifle()
     
     static var previews: some View {
-        TrainingDetails(inEdit: false, training: $training)
+        TrainingDetails(inEdit: false, training: $training, rifle: rifle)
     }
 }

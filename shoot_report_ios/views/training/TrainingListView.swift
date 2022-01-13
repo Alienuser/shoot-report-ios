@@ -22,7 +22,7 @@ struct TrainingListView: View {
             .onDelete(perform: deleteTraining)
         }
         .sheet(isPresented: $isPresented) {
-            TrainingDetails(inEdit: true, training: $info)
+            TrainingDetails(inEdit: true, training: $info, rifle: rifle)
         }
     }
     

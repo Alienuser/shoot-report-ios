@@ -27,6 +27,7 @@
 "information_section_source_content" = "Texts of the coach are in accordance with the Trainer-C mass sports training of the \"Deutscher Schützenbund\".";
 
 // Rifle
+"rifle" = "Rifle";
 "rifle_title" = "shoot report";
 "rifle_1" = "Air Rifle";
 "rifle_2" = "Air Rifle 3-position";
