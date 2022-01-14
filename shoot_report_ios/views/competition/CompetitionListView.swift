@@ -22,7 +22,7 @@ struct CompetitionListView: View {
             .onDelete(perform: deleteCompetition)
         }
         .sheet(isPresented: $showSheet) {
-            CompetitionDetails(inEdit: true, competition: $info)
+            CompetitionDetails(inEdit: true, competition: $info, rifle: rifle)
         }
     }
     

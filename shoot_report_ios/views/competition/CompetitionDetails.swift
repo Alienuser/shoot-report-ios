@@ -15,21 +15,22 @@ struct CompetitionDetails: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     @State private var showingAlert = false
-    @State var isImagePickerViewPresented = false
     @State private var showingSuccessAlert = false
+    @State var isImagePickerViewPresented = false
+    @State var isShareFilePresented = false
     @State var inEdit: Bool = true
     @State var competitionKind: HelperCompetitionKind.Kind = HelperCompetitionKind.Kind.league
     @State var location: String = ""
     @State var date: Date = Date()
     @State var pickedImages: [UIImage] = []
+    @State var shareViewURL: [NSURL] = []
     @State var shoot_count: String = ""
     @State var shots: [String] = []
     @State var totalRings: Double = 0
     @State var report: String = ""
-    
     private let textFieldObserver = TextFieldObserver()
-    
     @Binding var competition: Competition
+    var rifle: Rifle
     
     var body: some View {
         NavigationView {
@@ -168,7 +169,7 @@ struct CompetitionDetails: View {
                 }
                 
                 Section {
-                    Button(action: { self.showingAlert.toggle() }, label: {
+                    Button(action: {self.shareViewURL = [HelperShare.createCompetitionCSV(competition: competition, rifle: rifle, total: totalRings)]; self.isShareFilePresented = true }, label: {
                         HStack {
                             Spacer()
                             Text(LocalizedStringKey("competition_add_share"))
@@ -234,6 +235,14 @@ struct CompetitionDetails: View {
             }, completion: {
                 presentationMode.wrappedValue.dismiss()
             })
+            .sheet(isPresented: $isShareFilePresented){
+                HelperShareView(shareViewResult: $shareViewURL , isPresented: $isShareFilePresented)
+                
+            }.toast(isPresenting: $showingSuccessAlert, duration: 3, tapToDismiss: false, alert: {
+                AlertToast(type: .complete(Color("accentColor")), title: NSLocalizedString("competition_add_edit_success", comment: ""))
+            }, completion: {
+                presentationMode.wrappedValue.dismiss()
+            })
         }
     }
     
@@ -272,8 +281,9 @@ struct CompetitionDetails: View {
 struct CompetitionDetails_Previews: PreviewProvider {
     
     @State static var competition = Competition()
+    @State static var rifle = Rifle()
     
     static var previews: some View {
-        CompetitionDetails(inEdit: true, competition: $competition)
+        CompetitionDetails(inEdit: true, competition: $competition, rifle: rifle)
     }
 }
