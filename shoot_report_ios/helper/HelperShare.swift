@@ -39,9 +39,6 @@ class HelperShare {
 
         csvString = csvString.appending("\(String(NSLocalizedString("training_add_total", comment: ""))),\(String(NSLocalizedString("training_add_average", comment: ""))),\(String(NSLocalizedString("training_add_title_report", comment: "")))\n")
         
-        print("CSV STRING")
-        print(csvString)
-        
         // add dictionary data to csv String
         for dct in trainingArray {csvString = csvString.appending("\(String(describing: dct[("rifle")]!)) ,\(String(describing: dct[("training_add_title_mood")]!)), \(String(describing: dct[("training_add_kind")]!)), \(String(describing: dct[("training_add_location")]!)), \(String(describing: dct[("training_add_date")]!)), \(String(describing: dct[("training_add_shootcount")]!)),")
                     
@@ -52,7 +49,7 @@ class HelperShare {
             csvString = csvString.appending(
                 "\(String(describing: dct[("training_add_total")]!)),\(String(describing: dct[("training_add_average")]!)),\(String(describing: dct[("training_add_title_report")]!))\n")
         }
-        
+      
         // write file to documents folder
         do {
             let fileManager = FileManager.default
@@ -60,6 +57,7 @@ class HelperShare {
             let shareURL = sharePath.appendingPathComponent("CSVRec.csv")
             let NSShareURL = NSURL(string: shareURL.absoluteString)
             try csvString.write(to: shareURL, atomically: true, encoding: .utf8)
+            print("CSV written to:", shareURL)
             return NSShareURL!
         } catch {
             print("error creating file")
