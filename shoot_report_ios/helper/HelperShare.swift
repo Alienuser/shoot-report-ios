@@ -40,14 +40,14 @@ class HelperShare {
         csvString = csvString.appending("\(String(NSLocalizedString("training_add_total", comment: ""))),\(String(NSLocalizedString("training_add_average", comment: ""))),\(String(NSLocalizedString("training_add_title_report", comment: "")))\n")
         
         // add dictionary data to csv String
-        for dct in trainingArray {csvString = csvString.appending("\(String(describing: dct[("rifle")]!)) ,\(String(describing: dct[("training_add_title_mood")]!)), \(String(describing: dct[("training_add_kind")]!)), \(String(describing: dct[("training_add_location")]!)), \(String(describing: dct[("training_add_date")]!)), \(String(describing: dct[("training_add_shootcount")]!)),")
+        for dct in trainingArray {csvString = csvString.appending("\(String(describing: dct[("rifle")]!)),\(String(describing: dct[("training_add_title_mood")]!)),\(String(describing: dct[("training_add_kind")]!)),\"\(String(describing: dct[("training_add_location")]!))\",\(String(describing: dct[("training_add_date")]!)),\(String(describing: dct[("training_add_shootcount")]!)),")
                     
             for i in 0 ..< training.shoots!.count{
                 csvString = csvString.appending("\(String(describing: dct[("training_add_shot \(i)")]!)),")
             }
             
             csvString = csvString.appending(
-                "\(String(describing: dct[("training_add_total")]!)),\(String(describing: dct[("training_add_average")]!)),\(String(describing: dct[("training_add_title_report")]!))\n")
+                "\(String(describing: dct[("training_add_total")]!)),\(String(describing: dct[("training_add_average")]!)),\"\(String(describing: dct[("training_add_title_report")]!))\"\n")
         }
       
         // write file to documents folder
@@ -101,14 +101,14 @@ class HelperShare {
         csvString = csvString.appending("\(String(NSLocalizedString("competition_add_total", comment: ""))),\(String(NSLocalizedString("competition_add_title_report", comment: "")))\n")
         
         // add dictionary data to csv String
-        for dct in competitionArray {csvString = csvString.appending("\(String(describing: dct[("rifle")]!)) , \(String(describing: dct[("competition_add_kind")]!)), \(String(describing: dct[("competition_add_location")]!)), \(String(describing: dct[("competition_add_date")]!)), \(String(describing: dct[("competition_add_shootcount")]!)),")
+        for dct in competitionArray {csvString = csvString.appending("\(String(describing: dct[("rifle")]!)), \(String(describing: dct[("competition_add_kind")]!)),\"\(String(describing: dct[("competition_add_location")]!))\", \(String(describing: dct[("competition_add_date")]!)), \(String(describing: dct[("competition_add_shootcount")]!)),")
                     
             for i in 0 ..< competition.shoots!.count{
                 csvString = csvString.appending("\(String(describing: dct[("competition_add_shot \(i)")]!)),")
             }
             
             csvString = csvString.appending(
-                "\(String(describing: dct[("competition_add_total")]!)),\(String(describing: dct[("competition_add_title_report")]!))\n")
+                "\(String(describing: dct[("competition_add_total")]!)),\"\(String(describing: dct[("competition_add_title_report")]!))\"\n")
         }
       
         // write file to documents folder
