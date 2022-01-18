@@ -16,15 +16,14 @@ struct PhotoPicker: UIViewControllerRepresentable {
         
         // TODO Fix the colors
         // Set the colors
-        //let barApperance = UINavigationBar.appearance()
-        //barApperance.tintColor = UIColor(Color("mainColor"))
-        //barApperance.backgroundColor = UIColor(Color("mainColor"))
+        // let barApperance = UINavigationBar.appearance()
+        // barApperance.tintColor = UIColor(Color("mainColor"))
+        // barApperance.backgroundColor = UIColor(Color("mainColor"))
         
         return controller
     }
     
     func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {
-        
     }
     
     func makeCoordinator() -> Coordinator {

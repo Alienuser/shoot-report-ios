@@ -86,11 +86,13 @@ struct MainView: View {
                             self.showUserData = true
                         }) {
                             Image(systemName: "person.crop.circle.fill")
+                                .foregroundColor(.white)
                         }
                         Button(action: {
                             self.showTrainer = true
                         }) {
                             Image("icon_trainer")
+                                .foregroundColor(.white)
                         }
                         if selection == .training {
                             Button(action: {

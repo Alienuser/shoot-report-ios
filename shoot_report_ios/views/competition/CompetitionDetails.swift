@@ -15,21 +15,22 @@ struct CompetitionDetails: View {
     @Environment(\.managedObjectContext) private var viewContext
     
     @State private var showingAlert = false
-    @State var isImagePickerViewPresented = false
     @State private var showingSuccessAlert = false
+    @State var isImagePickerViewPresented = false
+    @State var isShareFilePresented = false
     @State var inEdit: Bool = true
     @State var competitionKind: HelperCompetitionKind.Kind = HelperCompetitionKind.Kind.league
     @State var location: String = ""
     @State var date: Date = Date()
     @State var pickedImages: [UIImage] = []
+    @State var shareViewURL: [NSURL] = []
     @State var shoot_count: String = ""
     @State var shots: [String] = []
     @State var totalRings: Double = 0
     @State var report: String = ""
-    
     private let textFieldObserver = TextFieldObserver()
-    
     @Binding var competition: Competition
+    var rifle: Rifle
     
     var body: some View {
         NavigationView {
@@ -42,14 +43,14 @@ struct CompetitionDetails: View {
                     }
                     .disabled(inEdit)
                     .pickerStyle(MenuPickerStyle())
-                    TextField(LocalizedStringKey("competition_add_location"), text: $location)
+                    TextField(LocalizedStringKey("competition_add_location"), text: Binding(get: { location }, set: { location = $0 }))
                         .disabled(inEdit)
                     DatePicker(LocalizedStringKey("competition_add_date"), selection: $date, displayedComponents: [.date])
                         .disabled(inEdit)
                 }
                 
                 Section {
-                    if pickedImages.count > 0 {
+                    if !pickedImages.isEmpty {
                         HStack {
                             Spacer()
                             Image(uiImage: pickedImages[0])
@@ -65,7 +66,7 @@ struct CompetitionDetails: View {
                                 Spacer()
                             }
                         })
-                        .disabled(inEdit)
+                            .disabled(inEdit)
                     }
                     Button(action: { self.isImagePickerViewPresented = true }, label: {
                         HStack {
@@ -76,8 +77,8 @@ struct CompetitionDetails: View {
                             Spacer()
                         }
                     })
-                    .listRowBackground(Color("mainColor"))
-                    .disabled(inEdit)
+                        .listRowBackground(Color("mainColor"))
+                        .disabled(inEdit)
                     Button(action: { self.showingAlert.toggle() }, label: {
                         HStack {
                             Spacer()
@@ -87,12 +88,12 @@ struct CompetitionDetails: View {
                             Spacer()
                         }
                     })
-                    .listRowBackground(Color("mainColor"))
-                    .disabled(inEdit)
+                        .listRowBackground(Color("mainColor"))
+                        .disabled(inEdit)
                 }
                 
                 Section(header: Text(LocalizedStringKey("competition_add_title_shots"))) {
-                    TextField(LocalizedStringKey("competition_add_shootcount"), text: $shoot_count)
+                    TextField(LocalizedStringKey("competition_add_shootcount"), text: Binding(get: { shoot_count }, set: { shoot_count = $0 }))
                         .keyboardType(.numberPad)
                         .disabled(inEdit)
                         .introspectTextField { textField in
@@ -102,14 +103,14 @@ struct CompetitionDetails: View {
                                 for: .editingDidBegin
                             )
                         }
-                    ForEach(0..<Int(floor(Double(shots.count) / 3.0)), id: \.self) { i in
+                    ForEach(0..<Int(floor(Double(self.shots.count) / 3.0)), id: \.self) { i in
                         HStack {
                             ForEach(0...2, id: \.self) { n in
                                 let help: Int = 3 * i
                                 let num: Int = help + n
                                 TextField(LocalizedStringKey("competition_add_shot \(3 * i + n + 1)"), text: Binding(
-                                            get: { shots[num] },
-                                            set: { shots[num] = $0.replacingOccurrences(of: ",", with: ".") }))
+                                    get: { self.shots[num] },
+                                    set: { self.shots[num] = $0.replacingOccurrences(of: ",", with: ".") }))
                                     .keyboardType(.decimalPad)
                                     .disabled(inEdit)
                                     .introspectTextField { textField in
@@ -122,13 +123,13 @@ struct CompetitionDetails: View {
                             }
                         }
                     }
-                    if (shots.count % 3 != 0) {
+                    if shots.count % 3 != 0 {
                         HStack {
-                            ForEach(0..<shots.count % 3, id: \.self) { n in
-                                let num: Int = shots.count - shots.count % 3 + n
+                            ForEach(0..<self.shots.count % 3, id: \.self) { n in
+                                let num: Int = self.shots.count - self.shots.count % 3 + n
                                 TextField(LocalizedStringKey("competition_add_shot \(num + 1)"), text: Binding(
-                                            get: { shots[num] },
-                                            set: { shots[num] = $0.replacingOccurrences(of: ",", with: ".") }))
+                                    get: { self.shots[num] },
+                                    set: { self.shots[num] = $0.replacingOccurrences(of: ",", with: ".") }))
                                     .keyboardType(.decimalPad)
                                     .disabled(inEdit)
                                     .introspectTextField { textField in
@@ -142,10 +143,12 @@ struct CompetitionDetails: View {
                         }
                     }
                 }.onChange(of: shoot_count, perform: { value in
-                    if (Double(value) != nil) {
-                        shots = Array(repeating: "", count: Int(ceil(Double(value)! / 10.0)))
-                    } else {
-                        shots = []
+                    if !inEdit {
+                        if Double(value) != nil {
+                            shots = Array(repeating: "", count: Int(ceil(Double(value)! / 10.0)))
+                        } else {
+                            shots = []
+                        }
                     }
                 })
                 
@@ -154,7 +157,7 @@ struct CompetitionDetails: View {
                         Text(LocalizedStringKey("competition_add_total"))
                         Spacer()
                         Text("\(totalRings, specifier: "%.1f")")
-                            .onChange(of: shots, perform: { value in
+                            .onChange(of: shots, perform: { _ in
                                 calculateInformation()
                             })
                     }
@@ -168,7 +171,7 @@ struct CompetitionDetails: View {
                 }
                 
                 Section {
-                    Button(action: { self.showingAlert.toggle() }, label: {
+                    Button(action: { self.shareViewURL = [HelperShare.createCompetitionCSV(competition: competition, rifle: rifle, total: totalRings)]; self.isShareFilePresented = true }, label: {
                         HStack {
                             Spacer()
                             Text(LocalizedStringKey("competition_add_share"))
@@ -177,19 +180,19 @@ struct CompetitionDetails: View {
                             Spacer()
                         }
                     })
-                    .listRowBackground(Color("mainColor"))
-                    .disabled(!inEdit)
+                        .listRowBackground(Color("mainColor"))
+                        .disabled(!inEdit)
                     Button(action: { updateCompetition(competition: competition) }, label: {
                         HStack {
                             Spacer()
-                            Text(LocalizedStringKey("competition_add_save"))
+                            Text(LocalizedStringKey("competition_add_edit"))
                                 .bold()
                                 .foregroundColor(Color.white)
                             Spacer()
                         }
                     })
-                    .listRowBackground(Color("mainColor"))
-                    .disabled(inEdit)
+                        .listRowBackground(Color("mainColor"))
+                        .disabled(inEdit)
                 }
             }
             .onAppear(perform: {
@@ -197,7 +200,7 @@ struct CompetitionDetails: View {
                 self.competitionKind = HelperCompetitionKind.Kind(rawValue: competition.kind ?? "competition_add_kind_league") ?? HelperCompetitionKind.Kind.league
                 self.location = competition.place ?? ""
                 self.date = competition.date ?? Date()
-                if (competition.image != nil) {
+                if competition.image != nil {
                     self.pickedImages.append(UIImage(data: competition.image ?? Data())!)
                 }
                 self.shoot_count = String(competition.shoot_count)
@@ -234,6 +237,13 @@ struct CompetitionDetails: View {
             }, completion: {
                 presentationMode.wrappedValue.dismiss()
             })
+            .sheet(isPresented: $isShareFilePresented) {
+                HelperShareView(shareViewResult: $shareViewURL, isPresented: $isShareFilePresented)
+            }.toast(isPresenting: $showingSuccessAlert, duration: 3, tapToDismiss: false, alert: {
+                AlertToast(type: .complete(Color("accentColor")), title: NSLocalizedString("competition_add_edit_success", comment: ""))
+            }, completion: {
+                presentationMode.wrappedValue.dismiss()
+            })
         }
     }
     
@@ -241,7 +251,7 @@ struct CompetitionDetails: View {
         withAnimation {
             competition.kind = competitionKind.rawValue
             competition.date = date
-            if (pickedImages.count > 0) {
+            if !pickedImages.isEmpty {
                 competition.image = pickedImages[0].jpegData(compressionQuality: 1)
             } else {
                 competition.image = nil
@@ -253,6 +263,7 @@ struct CompetitionDetails: View {
             
             do {
                 try viewContext.save()
+                inEdit.toggle()
                 showingSuccessAlert.toggle()
             } catch {
                 // Replace this implementation with code to handle the error appropriately.
@@ -272,8 +283,9 @@ struct CompetitionDetails: View {
 struct CompetitionDetails_Previews: PreviewProvider {
     
     @State static var competition = Competition()
+    @State static var rifle = Rifle()
     
     static var previews: some View {
-        CompetitionDetails(inEdit: true, competition: $competition)
+        CompetitionDetails(inEdit: true, competition: $competition, rifle: rifle)
     }
 }

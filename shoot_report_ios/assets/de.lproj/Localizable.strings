@@ -22,11 +22,12 @@
 "information_section_version" = "Informationen über die Version";
 "information_section_version_title" = "Version";
 "information_section_build_title" = "Build";
-"information_section_build_content" = "20210914";
+"information_section_build_content" = "20220118";
 "information_section_source" = "Quellenangaben";
 "information_section_source_content" = "Texte der Trainerfunktion sind in Anlehnung der Trainer-C Breitensportausbildung des Deutschen Schützenbundes.";
 
 // Rifle
+"rifle" = "Waffe";
 "rifle_title" = "shoot report";
 "rifle_1" = "Luftgewehr";
 "rifle_2" = "Luftgewehr 3-Stellung";
@@ -79,6 +80,7 @@
 "training_add_title_report" = "Trainingsbericht";
 "training_add_share" = "Training teilen";
 "training_add_save" = "Training speichern";
+"training_add_edit" = "Training bearbeiten";
 "training_add_success" = "Training gespeichert!";
 "training_add_edit_success" = "Training aktualisiert!";
 
@@ -110,6 +112,7 @@
 "competition_add_title_report" = "Wettkampfbericht";
 "competition_add_share" = "Wettkampf teilen";
 "competition_add_save" = "Wettkampf speichern";
+"competition_add_edit" = "Wettkampf bearbeiten";
 "competition_add_success" = "Wettkampf gespeichert!";
 "competition_add_edit_success" = "Wettkampf aktualisiert!";
 

@@ -18,7 +18,7 @@ struct GoalViewWhole: View {
     var body: some View {
         Form {
             Section(header:
-                        Text(LocalizedStringKey("goals_40"))
+                    Text(LocalizedStringKey("goals_40"))
                         .foregroundColor(Color("accentColor"))
                         .bold()
                         .textCase(nil)) {

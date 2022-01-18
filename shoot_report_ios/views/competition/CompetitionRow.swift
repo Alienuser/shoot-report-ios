@@ -26,7 +26,7 @@ struct CompetitionRow: View {
     
     private func calcPoints(points: [Double]) -> Text {
         let sum = points.reduce(0, +)
-        if (sum.truncatingRemainder(dividingBy: 1) == 0) {
+        if sum.truncatingRemainder(dividingBy: 1) == 0 {
             return Text(String(format: "%.0f", sum))
         } else {
             return Text(String(format: "%.1f", sum))

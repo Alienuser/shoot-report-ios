@@ -18,20 +18,22 @@ struct TrainingDetails: View {
     @State private var showingAlert = false
     @State private var showingSuccessAlert = false
     @State var isImagePickerViewPresented = false
+    @State var isShareFilePresented = false
     @State var inEdit: Bool = true
     @State var moodEmote: HelperMood.Mood = HelperMood.Mood.fine
     @State var trainingKind: HelperTrainingKind.Kind = HelperTrainingKind.Kind.setUp
     @State var location: String = ""
     @State var date: Date = Date()
     @State var pickedImages: [UIImage] = []
+    @State var shareViewURL: [NSURL] = []
     @State var shoot_count: String = ""
     @State var shots: [String] = []
     @State var totalRings: Double = 0
     @State var average: Double = 0
     @State var report: String = ""
     private let textFieldObserver = TextFieldObserver()
-    
     @Binding var training: Training
+    var rifle: Rifle
     
     var body: some View {
         NavigationView {
@@ -54,14 +56,14 @@ struct TrainingDetails: View {
                     }
                     .pickerStyle(MenuPickerStyle())
                     .disabled(inEdit)
-                    TextField(LocalizedStringKey("training_add_location"), text: $location)
+                    TextField(LocalizedStringKey("training_add_location"), text: Binding(get: { location }, set: { location = $0 }))
                         .disabled(inEdit)
                     DatePicker(LocalizedStringKey("training_add_date"), selection: $date, displayedComponents: [.date])
                         .disabled(inEdit)
                 }
                 
                 Section {
-                    if pickedImages.count > 0 {
+                    if !pickedImages.isEmpty {
                         HStack {
                             Spacer()
                             Image(uiImage: pickedImages[0])
@@ -77,7 +79,7 @@ struct TrainingDetails: View {
                                 Spacer()
                             }
                         })
-                        .disabled(inEdit)
+                            .disabled(inEdit)
                     }
                     Button(action: { self.isImagePickerViewPresented = true }, label: {
                         HStack {
@@ -88,8 +90,8 @@ struct TrainingDetails: View {
                             Spacer()
                         }
                     })
-                    .listRowBackground(Color("mainColor"))
-                    .disabled(inEdit)
+                        .listRowBackground(Color("mainColor"))
+                        .disabled(inEdit)
                     Button(action: { self.showingAlert.toggle() }, label: {
                         HStack {
                             Spacer()
@@ -99,12 +101,12 @@ struct TrainingDetails: View {
                             Spacer()
                         }
                     })
-                    .listRowBackground(Color("mainColor"))
-                    .disabled(inEdit)
+                        .listRowBackground(Color("mainColor"))
+                        .disabled(inEdit)
                 }
                 
                 Section(header: Text(LocalizedStringKey("training_add_title_shots"))) {
-                    TextField(LocalizedStringKey("training_add_shootcount"), text: $shoot_count)
+                    TextField(LocalizedStringKey("training_add_shootcount"), text: Binding(get: { shoot_count }, set: { shoot_count = $0 }))
                         .keyboardType(.numberPad)
                         .disabled(inEdit)
                         .introspectTextField { textField in
@@ -114,14 +116,14 @@ struct TrainingDetails: View {
                                 for: .editingDidBegin
                             )
                         }
-                    ForEach(0..<Int(floor(Double(shots.count) / 3.0)), id: \.self) { i in
+                    ForEach(0..<Int(floor(Double(self.shots.count) / 3.0)), id: \.self) { i in
                         HStack {
                             ForEach(0...2, id: \.self) { n in
                                 let help: Int = 3 * i
                                 let num: Int = help + n
                                 TextField(LocalizedStringKey("training_add_shot \(3 * i + n + 1)"), text: Binding(
-                                            get: { shots[num] },
-                                            set: { shots[num] = $0.replacingOccurrences(of: ",", with: ".") }))
+                                    get: { self.shots[num] },
+                                    set: { self.shots[num] = $0.replacingOccurrences(of: ",", with: ".") }))
                                     .keyboardType(.decimalPad)
                                     .disabled(inEdit)
                                     .introspectTextField { textField in
@@ -134,13 +136,13 @@ struct TrainingDetails: View {
                             }
                         }
                     }
-                    if (shots.count % 3 != 0) {
+                    if shots.count % 3 != 0 {
                         HStack {
-                            ForEach(0..<shots.count % 3, id: \.self) { n in
-                                let num: Int = shots.count - shots.count % 3 + n
+                            ForEach(0..<self.shots.count % 3, id: \.self) { n in
+                                let num: Int = self.shots.count - self.shots.count % 3 + n
                                 TextField(LocalizedStringKey("training_add_shot \(num + 1)"), text: Binding(
-                                            get: { shots[num] },
-                                            set: { shots[num] = $0.replacingOccurrences(of: ",", with: ".") }))
+                                    get: { self.shots[num] },
+                                    set: { self.shots[num] = $0.replacingOccurrences(of: ",", with: ".") }))
                                     .keyboardType(.decimalPad)
                                     .disabled(inEdit)
                                     .introspectTextField { textField in
@@ -153,11 +155,13 @@ struct TrainingDetails: View {
                             }
                         }
                     }
-                }.onChange(of: shoot_count, perform: { value in
-                    if (Double(value) != nil) {
-                        shots = Array(repeating: "", count: Int(ceil(Double(value)! / 10.0)))
-                    } else {
-                        shots = []
+                }.onChange(of: shoot_count, perform: { newValue in
+                    if !inEdit {
+                        if Double(newValue) != nil {
+                            shots = Array(repeating: "", count: Int(ceil(Double(newValue)! / 10.0)))
+                        } else {
+                            shots = []
+                        }
                     }
                 })
                 
@@ -166,7 +170,7 @@ struct TrainingDetails: View {
                         Text(LocalizedStringKey("training_add_total"))
                         Spacer()
                         Text("\(totalRings, specifier: "%.1f")")
-                            .onChange(of: shots, perform: { value in
+                            .onChange(of: shots, perform: { _ in
                                 calculateInformation()
                             })
                     }
@@ -174,7 +178,7 @@ struct TrainingDetails: View {
                         Text(LocalizedStringKey("training_add_average"))
                         Spacer()
                         Text("\(average, specifier: "%.2f")")
-                            .onChange(of: shoot_count, perform: { value in
+                            .onChange(of: shoot_count, perform: { _ in
                                 calculateInformation()
                             })
                     }
@@ -188,7 +192,8 @@ struct TrainingDetails: View {
                 }
                 
                 Section {
-                    Button(action: { self.showingAlert.toggle() }, label: {
+                    Button(action: {
+                        self.shareViewURL = [HelperShare.createTrainingCSV(training: training, rifle: rifle, average: average, total: totalRings)]; self.isShareFilePresented = true }, label: {
                         HStack {
                             Spacer()
                             Text(LocalizedStringKey("training_add_share"))
@@ -197,19 +202,20 @@ struct TrainingDetails: View {
                             Spacer()
                         }
                     })
-                    .listRowBackground(Color("mainColor"))
-                    .disabled(!inEdit)
+                        .listRowBackground(Color("mainColor"))
+                        .disabled(!inEdit)
+                    
                     Button(action: { updateTraining(training: training) }, label: {
                         HStack {
                             Spacer()
-                            Text(LocalizedStringKey("training_add_save"))
+                            Text(LocalizedStringKey("training_add_edit"))
                                 .bold()
                                 .foregroundColor(Color.white)
                             Spacer()
                         }
                     })
-                    .listRowBackground(Color("mainColor"))
-                    .disabled(inEdit)
+                        .listRowBackground(Color("mainColor"))
+                        .disabled(inEdit)
                 }
             }
             .onAppear(perform: {
@@ -218,7 +224,7 @@ struct TrainingDetails: View {
                 self.trainingKind = HelperTrainingKind.Kind(rawValue: training.training ?? "training_add_kind_setup") ?? HelperTrainingKind.Kind.setUp
                 self.location = training.place ?? ""
                 self.date = training.date ?? Date()
-                if (training.image != nil) {
+                if training.image != nil {
                     self.pickedImages.append(UIImage(data: training.image ?? Data())!)
                 }
                 self.shoot_count = String(training.shoot_count)
@@ -255,6 +261,13 @@ struct TrainingDetails: View {
             }, completion: {
                 presentationMode.wrappedValue.dismiss()
             })
+            .sheet(isPresented: $isShareFilePresented) {
+                HelperShareView(shareViewResult: $shareViewURL, isPresented: $isShareFilePresented)
+            }.toast(isPresenting: $showingSuccessAlert, duration: 3, tapToDismiss: false, alert: {
+                AlertToast(type: .complete(Color("accentColor")), title: NSLocalizedString("training_add_edit_success", comment: ""))
+            }, completion: {
+                presentationMode.wrappedValue.dismiss()
+            })
         }
     }
     
@@ -263,7 +276,7 @@ struct TrainingDetails: View {
             training.indicator = moodEmote.rawValue
             training.training = trainingKind.rawValue
             training.date = date
-            if (pickedImages.count > 0) {
+            if !pickedImages.isEmpty {
                 training.image = pickedImages[0].jpegData(compressionQuality: 1)
             } else {
                 training.image = nil
@@ -275,6 +288,7 @@ struct TrainingDetails: View {
             
             do {
                 try viewContext.save()
+                inEdit.toggle()
                 showingSuccessAlert.toggle()
             } catch {
                 // Replace this implementation with code to handle the error appropriately.
@@ -290,7 +304,7 @@ struct TrainingDetails: View {
         let shootCount = Int(shoot_count) ?? 0
         self.totalRings = doubles.reduce(0, +)
         
-        if (shootCount != 0) {
+        if shootCount != 0 {
             self.average = totalRings / Double(shootCount)
         }
     }
@@ -299,8 +313,9 @@ struct TrainingDetails: View {
 struct TrainingDetails_Previews: PreviewProvider {
     
     @State static var training = Training()
+    @State static var rifle = Rifle()
     
     static var previews: some View {
-        TrainingDetails(inEdit: false, training: $training)
+        TrainingDetails(inEdit: false, training: $training, rifle: rifle)
     }
 }

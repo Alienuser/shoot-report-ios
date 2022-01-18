@@ -33,7 +33,7 @@ struct DataPerson: View {
             }
             
             Section {
-                if pickedImages.count > 0 {
+                if !pickedImages.isEmpty {
                     HStack {
                         Spacer()
                         Image(uiImage: pickedImages[0])
@@ -61,7 +61,7 @@ struct DataPerson: View {
                 })
                 .listRowBackground(Color("mainColor"))
                 .onChange(of: pickedImages, perform: { newValue in
-                    if newValue.count != 0 {
+                    if !newValue.isEmpty {
                         let image = newValue[0]
                         if let data = image.pngData() {
                             // Create URL
@@ -74,7 +74,6 @@ struct DataPerson: View {
                                 
                                 // Store URL in User Defaults
                                 UserDefaults.standard.set(url, forKey: "user_picture")
-                                
                             } catch {
                                 print("Unable to Write Data to Disk (\(error))")
                             }
@@ -83,7 +82,6 @@ struct DataPerson: View {
                         UserDefaults.standard.removeObject(forKey: "user_picture")
                     }
                 })
-                
             }
             
             Section(header: Text(LocalizedStringKey("user_tab_person_club"))) {

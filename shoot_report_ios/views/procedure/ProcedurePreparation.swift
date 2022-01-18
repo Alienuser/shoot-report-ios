@@ -21,7 +21,6 @@ struct ProcedurePreparation: View {
                         }
                         .frame(minWidth: 0, maxWidth: .infinity, minHeight: 300, maxHeight: 300)
                         .ignoresSafeArea(.keyboard)
-                    
                 }
             }
         }

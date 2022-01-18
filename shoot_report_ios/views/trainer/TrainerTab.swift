@@ -38,7 +38,7 @@ struct TrainerTab: UIViewRepresentable {
                 return
             }
             
-            if (!url.absoluteString.contains("https://trainer.burkhardt-sport.solutions")) {
+            if !url.absoluteString.contains("https://trainer.burkhardt-sport.solutions") {
                 decisionHandler(.cancel)
                 UIApplication.shared.open(url)
             } else {

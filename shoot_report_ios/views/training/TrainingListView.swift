@@ -15,14 +15,15 @@ struct TrainingListView: View {
     var body: some View {
         List {
             ForEach(trainings) { training in
-                if (training.rifleId == rifle.id) {
+                if training.rifleId == rifle.id {
                     TrainingRow(isPresented: $isPresented, info: $info, training: training)
                 }
             }
             .onDelete(perform: deleteTraining)
         }
+        .listStyle(PlainListStyle())
         .sheet(isPresented: $isPresented) {
-            TrainingDetails(inEdit: true, training: $info)
+            TrainingDetails(inEdit: true, training: $info, rifle: rifle)
         }
     }
     

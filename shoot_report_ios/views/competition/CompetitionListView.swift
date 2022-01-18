@@ -15,14 +15,15 @@ struct CompetitionListView: View {
     var body: some View {
         List {
             ForEach(competitions) { competition in
-                if (competition.rifleId == rifle.id) {
+                if competition.rifleId == rifle.id {
                     CompetitionRow(showSheet: $showSheet, info: $info, competition: competition)
                 }
             }
             .onDelete(perform: deleteCompetition)
         }
+        .listStyle(PlainListStyle())
         .sheet(isPresented: $showSheet) {
-            CompetitionDetails(inEdit: true, competition: $info)
+            CompetitionDetails(inEdit: true, competition: $info, rifle: rifle)
         }
     }
     

@@ -30,25 +30,25 @@ struct CompetitionStatistics: View {
         datesTenth = []
         
         for competition in competitions.reversed() {
-            if (competition.rifleId == rifle.id) {
+            if competition.rifleId == rifle.id {
                 let rings = competition.shoots!.reduce(0, +)
                 areTenth = false
                 let helper = competition.date ?? Date()
                 let formatter = DateFormatter()
                 formatter.dateStyle = .short
                 
-                if (competition.shoots?.count != 0) {
+                if !competition.shoots!.isEmpty {
                     for i in competition.shoots! {
-                        if (!areTenth && (Double(Int(i)) != i)) {
+                        if !areTenth && (Double(Int(i)) != i) {
                             areTenth = true
                         }
                     }
                 }
                 
-                if (!areTenth && whole.count < 10) {
+                if !areTenth && whole.count < 10 {
                     whole.append(round(rings * 100) / 100)
                     datesWhole.append((formatter.string(from: helper)))
-                } else if (areTenth && tenth.count < 10) {
+                } else if areTenth && tenth.count < 10 {
                     tenth.append(round(rings * 100) / 100)
                     datesTenth.append((formatter.string(from: helper)))
                 }

@@ -17,6 +17,7 @@ struct TrainingAdd: View {
     @State private var showingAlert = false
     @State private var showingSuccessAlert = false
     @State var isImagePickerViewPresented = false
+    @State var inEdit: Bool = false
     @State var moodEmote: HelperMood.Mood = HelperMood.Mood.fine
     @State var trainingKind: HelperTrainingKind.Kind = HelperTrainingKind.Kind.setUp
     @State var location: String = ""
@@ -54,7 +55,7 @@ struct TrainingAdd: View {
                 }
                 
                 Section {
-                    if pickedImages.count > 0 {
+                    if !pickedImages.isEmpty {
                         HStack {
                             Spacer()
                             Image(uiImage: pickedImages[0])
@@ -80,7 +81,7 @@ struct TrainingAdd: View {
                             Spacer()
                         }
                     })
-                    .listRowBackground(Color("mainColor"))
+                        .listRowBackground(Color("mainColor"))
                     Button(action: { self.showingAlert.toggle() }, label: {
                         HStack {
                             Spacer()
@@ -90,7 +91,7 @@ struct TrainingAdd: View {
                             Spacer()
                         }
                     })
-                    .listRowBackground(Color("mainColor"))
+                        .listRowBackground(Color("mainColor"))
                 }
                 
                 Section(header: Text(LocalizedStringKey("training_add_title_shots"))) {
@@ -109,8 +110,8 @@ struct TrainingAdd: View {
                                 let help: Int = 3 * i
                                 let num: Int = help + n
                                 TextField(LocalizedStringKey("training_add_shot \(3 * i + n + 1)"), text: Binding(
-                                            get: { shots[num] },
-                                            set: { shots[num] = $0.replacingOccurrences(of: ",", with: ".") }))
+                                    get: { shots[num] },
+                                    set: { shots[num] = $0.replacingOccurrences(of: ",", with: ".") }))
                                     .keyboardType(.decimalPad)
                                     .introspectTextField { textField in
                                         textField.addTarget(
@@ -122,13 +123,13 @@ struct TrainingAdd: View {
                             }
                         }
                     }
-                    if (shots.count % 3 != 0) {
+                    if shots.count % 3 != 0 {
                         HStack {
                             ForEach(0..<shots.count % 3, id: \.self) { n in
                                 let num: Int = shots.count - shots.count % 3 + n
                                 TextField(LocalizedStringKey("training_add_shot \(num + 1)"), text: Binding(
-                                            get: { shots[num] },
-                                            set: { shots[num] = $0.replacingOccurrences(of: ",", with: ".") }))
+                                    get: { shots[num] },
+                                    set: { shots[num] = $0.replacingOccurrences(of: ",", with: ".") }))
                                     .keyboardType(.decimalPad)
                                     .introspectTextField { textField in
                                         textField.addTarget(
@@ -141,7 +142,7 @@ struct TrainingAdd: View {
                         }
                     }
                 }.onChange(of: shoot_count, perform: { value in
-                    if (Double(value) != nil) {
+                    if Double(value) != nil {
                         shots = Array(repeating: "", count: Int(ceil(Double(value)! / 10.0)))
                     } else {
                         shots = []
@@ -153,7 +154,7 @@ struct TrainingAdd: View {
                         Text(LocalizedStringKey("training_add_total"))
                         Spacer()
                         Text("\(totalRings, specifier: "%.1f")")
-                            .onChange(of: shots, perform: { value in
+                            .onChange(of: shots, perform: { _ in
                                 result()
                             })
                     }
@@ -161,7 +162,7 @@ struct TrainingAdd: View {
                         Text(LocalizedStringKey("training_add_average"))
                         Spacer()
                         Text("\(average, specifier: "%.2f")")
-                            .onChange(of: shoot_count, perform: { value in
+                            .onChange(of: shoot_count, perform: { _ in
                                 result()
                             })
                     }
@@ -183,7 +184,8 @@ struct TrainingAdd: View {
                             Spacer()
                         }
                     })
-                    .listRowBackground(Color("mainColor"))
+                        .disabled(inEdit)
+                        .listRowBackground(Color("mainColor"))
                 }
             }
             .onAppear(perform: {
@@ -231,6 +233,7 @@ struct TrainingAdd: View {
             
             do {
                 try viewContext.save()
+                inEdit.toggle()
                 showingSuccessAlert.toggle()
             } catch {
                 // Replace this implementation with code to handle the error appropriately.
@@ -246,7 +249,7 @@ struct TrainingAdd: View {
         let shootCount = Int(shoot_count) ?? 0
         self.totalRings = doubles.reduce(0, +)
         
-        if (shootCount != 0) {
+        if shootCount != 0 {
             self.average = totalRings / Double(shootCount)
         }
     }
