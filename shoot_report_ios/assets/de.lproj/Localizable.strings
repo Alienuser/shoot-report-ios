@@ -22,7 +22,7 @@
 "information_section_version" = "Informationen über die Version";
 "information_section_version_title" = "Version";
 "information_section_build_title" = "Build";
-"information_section_build_content" = "20211216";
+"information_section_build_content" = "20220118";
 "information_section_source" = "Quellenangaben";
 "information_section_source_content" = "Texte der Trainerfunktion sind in Anlehnung der Trainer-C Breitensportausbildung des Deutschen Schützenbundes.";
 
