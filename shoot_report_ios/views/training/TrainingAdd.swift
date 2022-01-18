@@ -17,6 +17,7 @@ struct TrainingAdd: View {
     @State private var showingAlert = false
     @State private var showingSuccessAlert = false
     @State var isImagePickerViewPresented = false
+    @State var inEdit: Bool = false
     @State var moodEmote: HelperMood.Mood = HelperMood.Mood.fine
     @State var trainingKind: HelperTrainingKind.Kind = HelperTrainingKind.Kind.setUp
     @State var location: String = ""
@@ -80,7 +81,7 @@ struct TrainingAdd: View {
                             Spacer()
                         }
                     })
-                    .listRowBackground(Color("mainColor"))
+                        .listRowBackground(Color("mainColor"))
                     Button(action: { self.showingAlert.toggle() }, label: {
                         HStack {
                             Spacer()
@@ -90,7 +91,7 @@ struct TrainingAdd: View {
                             Spacer()
                         }
                     })
-                    .listRowBackground(Color("mainColor"))
+                        .listRowBackground(Color("mainColor"))
                 }
                 
                 Section(header: Text(LocalizedStringKey("training_add_title_shots"))) {
@@ -109,8 +110,8 @@ struct TrainingAdd: View {
                                 let help: Int = 3 * i
                                 let num: Int = help + n
                                 TextField(LocalizedStringKey("training_add_shot \(3 * i + n + 1)"), text: Binding(
-                                            get: { shots[num] },
-                                            set: { shots[num] = $0.replacingOccurrences(of: ",", with: ".") }))
+                                    get: { shots[num] },
+                                    set: { shots[num] = $0.replacingOccurrences(of: ",", with: ".") }))
                                     .keyboardType(.decimalPad)
                                     .introspectTextField { textField in
                                         textField.addTarget(
@@ -127,8 +128,8 @@ struct TrainingAdd: View {
                             ForEach(0..<shots.count % 3, id: \.self) { n in
                                 let num: Int = shots.count - shots.count % 3 + n
                                 TextField(LocalizedStringKey("training_add_shot \(num + 1)"), text: Binding(
-                                            get: { shots[num] },
-                                            set: { shots[num] = $0.replacingOccurrences(of: ",", with: ".") }))
+                                    get: { shots[num] },
+                                    set: { shots[num] = $0.replacingOccurrences(of: ",", with: ".") }))
                                     .keyboardType(.decimalPad)
                                     .introspectTextField { textField in
                                         textField.addTarget(
@@ -183,7 +184,8 @@ struct TrainingAdd: View {
                             Spacer()
                         }
                     })
-                    .listRowBackground(Color("mainColor"))
+                        .disabled(inEdit)
+                        .listRowBackground(Color("mainColor"))
                 }
             }
             .onAppear(perform: {
@@ -231,6 +233,7 @@ struct TrainingAdd: View {
             
             do {
                 try viewContext.save()
+                inEdit.toggle()
                 showingSuccessAlert.toggle()
             } catch {
                 // Replace this implementation with code to handle the error appropriately.

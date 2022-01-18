@@ -17,6 +17,7 @@ struct CompetitionAdd: View {
     @State private var showingAlert = false
     @State private var showingSuccessAlert = false
     @State var isImagePickerViewPresented = false
+    @State var inEdit: Bool = false
     @State var competitionKind: HelperCompetitionKind.Kind = HelperCompetitionKind.Kind.league
     @State var location: String = ""
     @State var date: Date = Date()
@@ -71,7 +72,7 @@ struct CompetitionAdd: View {
                             Spacer()
                         }
                     })
-                    .listRowBackground(Color("mainColor"))
+                        .listRowBackground(Color("mainColor"))
                     Button(action: { self.showingAlert.toggle() }, label: {
                         HStack {
                             Spacer()
@@ -81,7 +82,7 @@ struct CompetitionAdd: View {
                             Spacer()
                         }
                     })
-                    .listRowBackground(Color("mainColor"))
+                        .listRowBackground(Color("mainColor"))
                 }
                 
                 Section(header: Text(LocalizedStringKey("competition_add_title_shots"))) {
@@ -100,8 +101,8 @@ struct CompetitionAdd: View {
                                 let help: Int = 3 * i
                                 let num: Int = help + n
                                 TextField(LocalizedStringKey("competition_add_shot \(3 * i + n + 1)"), text: Binding(
-                                            get: { shots[num] },
-                                            set: { shots[num] = $0.replacingOccurrences(of: ",", with: ".") }))
+                                    get: { shots[num] },
+                                    set: { shots[num] = $0.replacingOccurrences(of: ",", with: ".") }))
                                     .keyboardType(.decimalPad)
                                     .introspectTextField { textField in
                                         textField.addTarget(
@@ -118,8 +119,8 @@ struct CompetitionAdd: View {
                             ForEach(0..<shots.count % 3, id: \.self) { n in
                                 let num: Int = shots.count - shots.count % 3 + n
                                 TextField(LocalizedStringKey("competition_add_shot \(num + 1)"), text: Binding(
-                                            get: { shots[num] },
-                                            set: { shots[num] = $0.replacingOccurrences(of: ",", with: ".") }))
+                                    get: { shots[num] },
+                                    set: { shots[num] = $0.replacingOccurrences(of: ",", with: ".") }))
                                     .keyboardType(.decimalPad)
                                     .introspectTextField { textField in
                                         textField.addTarget(
@@ -166,7 +167,8 @@ struct CompetitionAdd: View {
                             Spacer()
                         }
                     })
-                    .listRowBackground(Color("mainColor"))
+                        .disabled(inEdit)
+                        .listRowBackground(Color("mainColor"))
                 }
             }
             .alert(isPresented: $showingAlert) {
@@ -210,6 +212,7 @@ struct CompetitionAdd: View {
             
             do {
                 try viewContext.save()
+                inEdit.toggle()
                 showingSuccessAlert.toggle()
             } catch {
                 // Replace this implementation with code to handle the error appropriately.

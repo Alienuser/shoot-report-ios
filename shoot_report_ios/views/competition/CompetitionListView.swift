@@ -21,6 +21,7 @@ struct CompetitionListView: View {
             }
             .onDelete(perform: deleteCompetition)
         }
+        .listStyle(PlainListStyle())
         .sheet(isPresented: $showSheet) {
             CompetitionDetails(inEdit: true, competition: $info, rifle: rifle)
         }
