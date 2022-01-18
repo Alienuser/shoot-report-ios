@@ -55,7 +55,7 @@ struct TrainingAdd: View {
                 }
                 
                 Section {
-                    if pickedImages.count > 0 {
+                    if !pickedImages.isEmpty {
                         HStack {
                             Spacer()
                             Image(uiImage: pickedImages[0])
@@ -123,7 +123,7 @@ struct TrainingAdd: View {
                             }
                         }
                     }
-                    if (shots.count % 3 != 0) {
+                    if shots.count % 3 != 0 {
                         HStack {
                             ForEach(0..<shots.count % 3, id: \.self) { n in
                                 let num: Int = shots.count - shots.count % 3 + n
@@ -142,7 +142,7 @@ struct TrainingAdd: View {
                         }
                     }
                 }.onChange(of: shoot_count, perform: { value in
-                    if (Double(value) != nil) {
+                    if Double(value) != nil {
                         shots = Array(repeating: "", count: Int(ceil(Double(value)! / 10.0)))
                     } else {
                         shots = []
@@ -154,7 +154,7 @@ struct TrainingAdd: View {
                         Text(LocalizedStringKey("training_add_total"))
                         Spacer()
                         Text("\(totalRings, specifier: "%.1f")")
-                            .onChange(of: shots, perform: { value in
+                            .onChange(of: shots, perform: { _ in
                                 result()
                             })
                     }
@@ -162,7 +162,7 @@ struct TrainingAdd: View {
                         Text(LocalizedStringKey("training_add_average"))
                         Spacer()
                         Text("\(average, specifier: "%.2f")")
-                            .onChange(of: shoot_count, perform: { value in
+                            .onChange(of: shoot_count, perform: { _ in
                                 result()
                             })
                     }
@@ -249,7 +249,7 @@ struct TrainingAdd: View {
         let shootCount = Int(shoot_count) ?? 0
         self.totalRings = doubles.reduce(0, +)
         
-        if (shootCount != 0) {
+        if shootCount != 0 {
             self.average = totalRings / Double(shootCount)
         }
     }

@@ -6,8 +6,8 @@ class HelperShare {
     // static function so it can be called externally
     static func createTrainingCSV(training: Training, rifle: Rifle, average: Double, total: Double) -> NSURL {
         
-        var trainingArray:[Dictionary<String, AnyObject>] =  Array()
-        var trainingDict = Dictionary<String, AnyObject>()
+        var trainingArray: [[String: AnyObject]] = Array()
+        var trainingDict = [String: AnyObject]()
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
@@ -19,7 +19,7 @@ class HelperShare {
         trainingDict.updateValue(String(training.place ?? "") as AnyObject, forKey: "training_add_location")
         trainingDict.updateValue(dateFormatter.string(from: training.date ?? Date()) as AnyObject, forKey: "training_add_date")
         trainingDict.updateValue(String(training.shoot_count) as AnyObject, forKey: "training_add_shootcount")
-        for i in 0 ..< training.shoots!.count{
+        for i in 0 ..< training.shoots!.count {
             trainingDict.updateValue(String(training.shoots?[i] ?? 0) as AnyObject, forKey: "training_add_shot \(i)")
         }
         trainingDict.updateValue(String(total) as AnyObject, forKey: "training_add_total")
@@ -32,7 +32,7 @@ class HelperShare {
         // string with column names
         var csvString = "\(String(NSLocalizedString("rifle", comment: ""))),\(String(NSLocalizedString("training_add_title_mood", comment: ""))),\(String(NSLocalizedString("training_add_kind", comment: ""))), \(String(NSLocalizedString("training_add_location", comment: ""))), \(String(NSLocalizedString("training_add_date", comment: ""))),\(String(NSLocalizedString("training_add_shootcount", comment: ""))),"
         
-        for i in 1 ..< training.shoots!.count+1{
+        for i in 1 ..< training.shoots!.count + 1 {
             csvString = csvString.appending(String(format: NSLocalizedString("training_add_shot %lld", comment: ""), i))
             csvString = csvString.appending(",")
         }
@@ -42,7 +42,7 @@ class HelperShare {
         // add dictionary data to csv String
         for dct in trainingArray {csvString = csvString.appending("\(String(describing: dct[("rifle")]!)),\(String(describing: dct[("training_add_title_mood")]!)),\(String(describing: dct[("training_add_kind")]!)),\"\(String(describing: dct[("training_add_location")]!))\",\(String(describing: dct[("training_add_date")]!)),\(String(describing: dct[("training_add_shootcount")]!)),")
             
-            for i in 0 ..< training.shoots!.count{
+            for i in 0 ..< training.shoots!.count {
                 csvString = csvString.appending("\(String(describing: dct[("training_add_shot \(i)")]!)),")
             }
             
@@ -65,12 +65,11 @@ class HelperShare {
         }
     }
     
-    
     // static function so it can be called externally
     static func createCompetitionCSV(competition: Competition, rifle: Rifle, total: Double) -> NSURL {
         
-        var competitionArray:[Dictionary<String, AnyObject>] =  Array()
-        var competitionDict = Dictionary<String, AnyObject>()
+        var competitionArray: [[String: AnyObject]] = Array()
+        var competitionDict = [String: AnyObject]()
         
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
@@ -81,7 +80,7 @@ class HelperShare {
         competitionDict.updateValue(String(competition.place ?? "") as AnyObject, forKey: "competition_add_location")
         competitionDict.updateValue(dateFormatter.string(from: competition.date ?? Date()) as AnyObject, forKey: "competition_add_date")
         competitionDict.updateValue(String(competition.shoot_count) as AnyObject, forKey: "competition_add_shootcount")
-        for i in 0 ..< competition.shoots!.count{
+        for i in 0 ..< competition.shoots!.count {
             competitionDict.updateValue(String(competition.shoots?[i] ?? 0) as AnyObject, forKey: "competition_add_shot \(i)")
         }
         competitionDict.updateValue(String(total) as AnyObject, forKey: "competition_add_total")
@@ -93,7 +92,7 @@ class HelperShare {
         // string with column names
         var csvString = "\(String(NSLocalizedString("rifle", comment: ""))),\(String(NSLocalizedString("competition_add_kind", comment: ""))), \(String(NSLocalizedString("competition_add_location", comment: ""))), \(String(NSLocalizedString("competition_add_date", comment: ""))),\(String(NSLocalizedString("competition_add_shootcount", comment: ""))),"
         
-        for i in 1 ..< competition.shoots!.count+1{
+        for i in 1 ..< competition.shoots!.count + 1 {
             csvString = csvString.appending(String(format: NSLocalizedString("competition_add_shot %lld", comment: ""), i))
             csvString = csvString.appending(",")
         }
@@ -103,7 +102,7 @@ class HelperShare {
         // add dictionary data to csv String
         for dct in competitionArray {csvString = csvString.appending("\(String(describing: dct[("rifle")]!)), \(String(describing: dct[("competition_add_kind")]!)),\"\(String(describing: dct[("competition_add_location")]!))\", \(String(describing: dct[("competition_add_date")]!)), \(String(describing: dct[("competition_add_shootcount")]!)),")
             
-            for i in 0 ..< competition.shoots!.count{
+            for i in 0 ..< competition.shoots!.count {
                 csvString = csvString.appending("\(String(describing: dct[("competition_add_shot \(i)")]!)),")
             }
             
@@ -125,5 +124,4 @@ class HelperShare {
             return NSURL(string: "Error")!
         }
     }
-    
 }

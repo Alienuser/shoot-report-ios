@@ -50,7 +50,7 @@ struct CompetitionDetails: View {
                 }
                 
                 Section {
-                    if pickedImages.count > 0 {
+                    if !pickedImages.isEmpty {
                         HStack {
                             Spacer()
                             Image(uiImage: pickedImages[0])
@@ -123,7 +123,7 @@ struct CompetitionDetails: View {
                             }
                         }
                     }
-                    if (shots.count % 3 != 0) {
+                    if shots.count % 3 != 0 {
                         HStack {
                             ForEach(0..<self.shots.count % 3, id: \.self) { n in
                                 let num: Int = self.shots.count - self.shots.count % 3 + n
@@ -143,8 +143,8 @@ struct CompetitionDetails: View {
                         }
                     }
                 }.onChange(of: shoot_count, perform: { value in
-                    if(!inEdit) {
-                        if (Double(value) != nil) {
+                    if !inEdit {
+                        if Double(value) != nil {
                             shots = Array(repeating: "", count: Int(ceil(Double(value)! / 10.0)))
                         } else {
                             shots = []
@@ -157,7 +157,7 @@ struct CompetitionDetails: View {
                         Text(LocalizedStringKey("competition_add_total"))
                         Spacer()
                         Text("\(totalRings, specifier: "%.1f")")
-                            .onChange(of: shots, perform: { value in
+                            .onChange(of: shots, perform: { _ in
                                 calculateInformation()
                             })
                     }
@@ -171,7 +171,7 @@ struct CompetitionDetails: View {
                 }
                 
                 Section {
-                    Button(action: {self.shareViewURL = [HelperShare.createCompetitionCSV(competition: competition, rifle: rifle, total: totalRings)]; self.isShareFilePresented = true }, label: {
+                    Button(action: { self.shareViewURL = [HelperShare.createCompetitionCSV(competition: competition, rifle: rifle, total: totalRings)]; self.isShareFilePresented = true }, label: {
                         HStack {
                             Spacer()
                             Text(LocalizedStringKey("competition_add_share"))
@@ -200,7 +200,7 @@ struct CompetitionDetails: View {
                 self.competitionKind = HelperCompetitionKind.Kind(rawValue: competition.kind ?? "competition_add_kind_league") ?? HelperCompetitionKind.Kind.league
                 self.location = competition.place ?? ""
                 self.date = competition.date ?? Date()
-                if (competition.image != nil) {
+                if competition.image != nil {
                     self.pickedImages.append(UIImage(data: competition.image ?? Data())!)
                 }
                 self.shoot_count = String(competition.shoot_count)
@@ -237,9 +237,8 @@ struct CompetitionDetails: View {
             }, completion: {
                 presentationMode.wrappedValue.dismiss()
             })
-            .sheet(isPresented: $isShareFilePresented){
-                HelperShareView(shareViewResult: $shareViewURL , isPresented: $isShareFilePresented)
-                
+            .sheet(isPresented: $isShareFilePresented) {
+                HelperShareView(shareViewResult: $shareViewURL, isPresented: $isShareFilePresented)
             }.toast(isPresenting: $showingSuccessAlert, duration: 3, tapToDismiss: false, alert: {
                 AlertToast(type: .complete(Color("accentColor")), title: NSLocalizedString("competition_add_edit_success", comment: ""))
             }, completion: {
@@ -252,7 +251,7 @@ struct CompetitionDetails: View {
         withAnimation {
             competition.kind = competitionKind.rawValue
             competition.date = date
-            if (pickedImages.count > 0) {
+            if !pickedImages.isEmpty {
                 competition.image = pickedImages[0].jpegData(compressionQuality: 1)
             } else {
                 competition.image = nil

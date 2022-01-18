@@ -46,7 +46,7 @@ struct CompetitionAdd: View {
                 }
                 
                 Section {
-                    if pickedImages.count > 0 {
+                    if !pickedImages.isEmpty {
                         HStack {
                             Spacer()
                             Image(uiImage: pickedImages[0])
@@ -114,7 +114,7 @@ struct CompetitionAdd: View {
                             }
                         }
                     }
-                    if (shots.count % 3 != 0) {
+                    if shots.count % 3 != 0 {
                         HStack {
                             ForEach(0..<shots.count % 3, id: \.self) { n in
                                 let num: Int = shots.count - shots.count % 3 + n
@@ -133,7 +133,7 @@ struct CompetitionAdd: View {
                         }
                     }
                 }.onChange(of: shoot_count, perform: { value in
-                    if (Double(value) != nil) {
+                    if Double(value) != nil {
                         shots = Array(repeating: "", count: Int(ceil(Double(value)! / 10.0)))
                     } else {
                         shots = []
@@ -145,7 +145,7 @@ struct CompetitionAdd: View {
                         Text(LocalizedStringKey("competition_add_total"))
                         Spacer()
                         Text("\(totalRings, specifier: "%.1f")")
-                            .onChange(of: shots, perform: { value in
+                            .onChange(of: shots, perform: { _ in
                                 result()
                             })
                     }

@@ -15,7 +15,7 @@ struct TrainingListView: View {
     var body: some View {
         List {
             ForEach(trainings) { training in
-                if (training.rifleId == rifle.id) {
+                if training.rifleId == rifle.id {
                     TrainingRow(isPresented: $isPresented, info: $info, training: training)
                 }
             }

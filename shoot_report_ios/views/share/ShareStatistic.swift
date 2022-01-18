@@ -16,7 +16,7 @@ struct ShareStatistic: UIViewRepresentable {
         
         // Set the background color
         var backgroundColor = Color.white
-        if(colorScheme == .dark) {
+        if colorScheme == .dark {
             backgroundColor = Color.gray
         }
         

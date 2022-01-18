@@ -63,7 +63,7 @@ struct TrainingDetails: View {
                 }
                 
                 Section {
-                    if pickedImages.count > 0 {
+                    if !pickedImages.isEmpty {
                         HStack {
                             Spacer()
                             Image(uiImage: pickedImages[0])
@@ -136,7 +136,7 @@ struct TrainingDetails: View {
                             }
                         }
                     }
-                    if (shots.count % 3 != 0) {
+                    if shots.count % 3 != 0 {
                         HStack {
                             ForEach(0..<self.shots.count % 3, id: \.self) { n in
                                 let num: Int = self.shots.count - self.shots.count % 3 + n
@@ -156,8 +156,8 @@ struct TrainingDetails: View {
                         }
                     }
                 }.onChange(of: shoot_count, perform: { newValue in
-                    if(!inEdit) {
-                        if (Double(newValue) != nil) {
+                    if !inEdit {
+                        if Double(newValue) != nil {
                             shots = Array(repeating: "", count: Int(ceil(Double(newValue)! / 10.0)))
                         } else {
                             shots = []
@@ -170,7 +170,7 @@ struct TrainingDetails: View {
                         Text(LocalizedStringKey("training_add_total"))
                         Spacer()
                         Text("\(totalRings, specifier: "%.1f")")
-                            .onChange(of: shots, perform: { value in
+                            .onChange(of: shots, perform: { _ in
                                 calculateInformation()
                             })
                     }
@@ -178,7 +178,7 @@ struct TrainingDetails: View {
                         Text(LocalizedStringKey("training_add_average"))
                         Spacer()
                         Text("\(average, specifier: "%.2f")")
-                            .onChange(of: shoot_count, perform: { value in
+                            .onChange(of: shoot_count, perform: { _ in
                                 calculateInformation()
                             })
                     }
@@ -191,9 +191,9 @@ struct TrainingDetails: View {
                         .disabled(inEdit)
                 }
                 
-                
                 Section {
-                    Button(action: {self.shareViewURL = [HelperShare.createTrainingCSV(training: training, rifle: rifle, average: average, total: totalRings)]; self.isShareFilePresented = true }, label: {
+                    Button(action: {
+                        self.shareViewURL = [HelperShare.createTrainingCSV(training: training, rifle: rifle, average: average, total: totalRings)]; self.isShareFilePresented = true }, label: {
                         HStack {
                             Spacer()
                             Text(LocalizedStringKey("training_add_share"))
@@ -224,7 +224,7 @@ struct TrainingDetails: View {
                 self.trainingKind = HelperTrainingKind.Kind(rawValue: training.training ?? "training_add_kind_setup") ?? HelperTrainingKind.Kind.setUp
                 self.location = training.place ?? ""
                 self.date = training.date ?? Date()
-                if (training.image != nil) {
+                if training.image != nil {
                     self.pickedImages.append(UIImage(data: training.image ?? Data())!)
                 }
                 self.shoot_count = String(training.shoot_count)
@@ -261,9 +261,8 @@ struct TrainingDetails: View {
             }, completion: {
                 presentationMode.wrappedValue.dismiss()
             })
-            .sheet(isPresented: $isShareFilePresented){
-                HelperShareView(shareViewResult: $shareViewURL , isPresented: $isShareFilePresented)
-                
+            .sheet(isPresented: $isShareFilePresented) {
+                HelperShareView(shareViewResult: $shareViewURL, isPresented: $isShareFilePresented)
             }.toast(isPresenting: $showingSuccessAlert, duration: 3, tapToDismiss: false, alert: {
                 AlertToast(type: .complete(Color("accentColor")), title: NSLocalizedString("training_add_edit_success", comment: ""))
             }, completion: {
@@ -277,7 +276,7 @@ struct TrainingDetails: View {
             training.indicator = moodEmote.rawValue
             training.training = trainingKind.rawValue
             training.date = date
-            if (pickedImages.count > 0) {
+            if !pickedImages.isEmpty {
                 training.image = pickedImages[0].jpegData(compressionQuality: 1)
             } else {
                 training.image = nil
@@ -305,7 +304,7 @@ struct TrainingDetails: View {
         let shootCount = Int(shoot_count) ?? 0
         self.totalRings = doubles.reduce(0, +)
         
-        if (shootCount != 0) {
+        if shootCount != 0 {
             self.average = totalRings / Double(shootCount)
         }
     }

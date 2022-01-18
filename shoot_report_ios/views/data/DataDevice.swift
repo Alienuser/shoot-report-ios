@@ -17,7 +17,6 @@ struct DataDevice: View {
                         .ignoresSafeArea(.keyboard)
                 }
             }
-            
         }
         .listStyle(GroupedListStyle())
         .gesture(DragGesture())

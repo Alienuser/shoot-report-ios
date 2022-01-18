@@ -1,5 +1,4 @@
 import SwiftUI
-import PhotosUI
 
 struct HelperShareView: UIViewControllerRepresentable {
     
@@ -11,11 +10,8 @@ struct HelperShareView: UIViewControllerRepresentable {
         let controller = UIActivityViewController(activityItems: shareViewResult, applicationActivities: nil)
         
         return controller
-        
     }
     
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {
-        
     }
 }
-

@@ -15,7 +15,7 @@ struct WeaponList: View {
             VStack {
                 List {
                     ForEach(rifles) { rifle in
-                        if (rifle.show) {
+                        if rifle.show {
                             NavigationLink(destination: MainView(rifle: rifle)) {
                                 WeaponRow(rifle: rifle)
                             }
@@ -34,11 +34,11 @@ struct WeaponList: View {
                         }) {
                             Image("icon_reload")
                         }
-                        //EditButton()
+                        // EditButton()
                     }
                 }
                 Spacer()
-                if (UIDevice.current.userInterfaceIdiom != .pad) {
+                if UIDevice.current.userInterfaceIdiom != .pad {
                     ShareAd()
                 }
             }
@@ -147,7 +147,7 @@ struct WeaponList: View {
     private func showAllRifles() {
         withAnimation {
             // Sort them alphabetically
-            //let rifles = rifles.sorted { $0.name! < $1.name! }
+            // let rifles = rifles.sorted { $0.name! < $1.name! }
             rifles.forEach { rifle in
                 rifle.show = true
             }
