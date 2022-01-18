@@ -35,7 +35,6 @@ struct TrainingDetails: View {
     @Binding var training: Training
     var rifle: Rifle
     
-    
     var body: some View {
         NavigationView {
             Form {
@@ -48,7 +47,7 @@ struct TrainingDetails: View {
                     .disabled(inEdit)
                     .pickerStyle(SegmentedPickerStyle())
                 }
-
+                
                 Section(header: Text(LocalizedStringKey("training_add_title_general"))) {
                     Picker(LocalizedStringKey("training_add_kind"), selection: $trainingKind) {
                         ForEach(HelperTrainingKind.Kind.allCases) { kind in
@@ -191,11 +190,10 @@ struct TrainingDetails: View {
                         .ignoresSafeArea(.keyboard)
                         .disabled(inEdit)
                 }
-            
+                
                 
                 Section {
-
-                    Button(action: { self.showingAlert.toggle() }, label: {
+                    Button(action: {self.shareViewURL = [HelperShare.createTrainingCSV(training: training, rifle: rifle, average: average, total: totalRings)]; self.isShareFilePresented = true }, label: {
                         HStack {
                             Spacer()
                             Text(LocalizedStringKey("training_add_share"))
@@ -206,7 +204,7 @@ struct TrainingDetails: View {
                     })
                         .listRowBackground(Color("mainColor"))
                         .disabled(!inEdit)
-
+                    
                     Button(action: { updateTraining(training: training) }, label: {
                         HStack {
                             Spacer()
