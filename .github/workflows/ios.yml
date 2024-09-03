@@ -22,7 +22,7 @@ jobs:
     needs: checkout
     runs-on: macos-latest
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
           name: repository
       - name: Set Default Scheme
@@ -40,7 +40,7 @@ jobs:
   #   needs: scheme
   #   runs-on: ubuntu-latest
   #   steps:
-  #     - uses: actions/download-artifact@v2
+  #     - uses: actions/download-artifact@v4.1.7
   #       with:
   #         name: repository
   #     - name: SwiftLint
@@ -50,10 +50,10 @@ jobs:
   #   needs: scheme
   #   runs-on: macos-latest
   #   steps:
-  #     - uses: actions/download-artifact@v2
+  #     - uses: actions/download-artifact@v4.1.7
   #       with:
   #         name: repository
-  #     - uses: actions/download-artifact@v2
+  #     - uses: actions/download-artifact@v4.1.7
   #       with:
   #         name: scheme
   #     - name: Build
